@@ -12,7 +12,8 @@ router.get('/', (req, res) => {
     res.json(users);
 });
 
-router.get('/:id', (req, res) => {
+// GET /users/1
+router.get('/', (req, res) => {
     res.json(users.filter(usr => usr.id === parseInt(req.params.id)));
 });
 

@@ -6,15 +6,17 @@ let books = [
     {name: 'books2', id: 3, users_id: 3},
 ];
 
-// GET /users
+// GET /books
 router.get('/', (req, res) => {
     res.json(books);
 });
 
-// GET /books
+// GET /books/1
 router.get('/', (req, res) => {
-    res.json(books.filter(book => book.users_id === parseInt(req.query.users_id)));
+    res.json(books.filter(book => book.id === parseInt(req.params.id)))
+    // res.json(books.filter(book => book.users_id === parseInt(req.query.users_id)));
     // res.json(req.query.users_id ? books.filter(book => book.users_id === parseInt(req.query.users_id));
+    console.log(res.json(books.map(i => i.id)));
 });
 
 router.put('/:id', (req, res) => {
@@ -29,7 +31,7 @@ router.post('/', (req, res) => {
 });
 
 // PUT /books/:id
-router.get('/:id', (req, res) => {
+router.put('/:id', (req, res) => {
     books.forEach(usr => {
         if (usr.id === parseInt(req.params.id)) {
             usr.name = req.body.new_name;
