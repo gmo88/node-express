@@ -1,4 +1,4 @@
-let users = [
+let pages = [
     {
         "page_id": 0,
         "users": [
@@ -11,13 +11,13 @@ let users = [
         "users": [
             {"id": 2, "name": "Kate", "surname": "Winslet"},
             {"id": 3, "name": "Brandon", "surname": "Walsh"},
-            {"id": 5, "name": "Mason", "surname": "Card"}
+            {"id": 4, "name": "Mason", "surname": "Card"}
         ],
     },
     {
         "page_id": 2,
         "users": [
-            {"id": 4, "name": "Rebeca", "surname": "Cocney"},
+            {"id": 5, "name": "Rebeca", "surname": "Cocney"},
             {"id": 6, "name": "Jesy", "surname": "Pinkmen"},
             {"id": 7, "name": "Wolter", "surname": "White"},
             {"id": 8, "name": "Colly", "surname": "Bracko"},
@@ -48,4 +48,4 @@ let users = [
     },
 ];
 
-module.exports = users;
+module.exports = pages;
