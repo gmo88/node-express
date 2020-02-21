@@ -9,24 +9,12 @@ router.get('/', (req, res) => {
 
 // method: GET, path: /pages, page index: /7
 router.get('/:id', (req, res) => {
-    // request id
     let page_num_index = pages.map(i => i.page_id).indexOf(parseInt(req.params.id));
-
-    pages.reduce((acc, val, idx) => {
-        if (val.page_id === page_num_index) {
-            console.log(val.users);
-            return val.users;
-        } else {
-            console.log("404 error");
-            return "404 error";
-        }
-    }, []);
-
-    // res.json(pages.filter(page => page.page_id['user'] === parseInt(req.params.id)));
-    // console.log("req.params.id:", parseInt(req.params.id));
-    // console.log("req.query:", req.query);
-    // console.log("filter:", pages.filter(item => item["user"] === parseInt(req.params.id)));
-    // console.log("users:", pages.map(item => item.users));
+    if (page_num_index >= pages.length || page_num_index < 0) {
+        res.status(404).send('what???');
+    } else {
+        res.status(200).send(pages[page_num_index]);
+    }
 });
 
 module.exports = router;
