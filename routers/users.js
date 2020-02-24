@@ -17,5 +17,4 @@ router.get('/:id', (req, res) => {
         res.status(200).send(pages[page_num_index]);
     }
 });
-
 module.exports = router;
