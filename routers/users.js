@@ -6,13 +6,23 @@ const {performance} = require('perf_hooks');
 // method: GET, path: /users
 users_route.get('/', (req, res) => {
     const beginTime = performance.now();
-    let userArray = [];
-    data.forEach(page => page.users.forEach(user => userArray.push(user)));
-    console.log("Execution time: %dms", performance.now() - beginTime);
-    if (userArray.length === 0) {
-        res.status(404).send(userArray)
+    let searchName = req.query.name;
+    if (searchName == null) {
+        let userArray = [];
+        data.forEach(page => page.users.forEach(user => userArray.push(user)));
+        console.log("Execution time: %dms", performance.now() - beginTime);
+        res.status(userArray.length === 0 ? 404 : 200).send(userArray);
     } else {
-        res.status(200).send(userArray);
+        let resultArray = [];
+        for (let i = 0; i < data.length; i++) {
+            for (let j = 0; j < data[i].users.length; j++) {
+                if (data[i].users[j].name === searchName) {
+                    resultArray.push(data[i].users[j]);
+                }
+            }
+        }
+        console.log("Execution time: %dms", performance.now() - beginTime);
+        res.status(resultArray !== null ? 200 : 404).send(resultArray);
     }
 });
 
@@ -32,11 +42,7 @@ users_route.get('/:id', (req, res) => {
     });
     const endTime = performance.now();
     console.log("Execution time: %dms", endTime - beginTime);
-    if (userObject != null) {
-        res.status(200).send(userObject);
-    } else {
-        res.status(404).send('{}');
-    }
+    res.status(userObject != null ? 200 : 404).send(userObject);
 });
 
 module.exports = users_route;
