@@ -7,11 +7,7 @@ const {performance} = require('perf_hooks');
 users_route.get('/', (req, res) => {
     const beginTime = performance.now();
     let userArray = [];
-    for (let i = 0; i < data.length; i++) {
-        for (let j = 0; j < data[i].users.length; j++) {
-            userArray.push(data[i].users[j]);
-        }
-    }
+    data.forEach(page => page.users.forEach(user => userArray.push(user)));
     console.log("Execution time: %dms", performance.now() - beginTime);
     if (userArray.length === 0) {
         res.status(404).send(userArray)
