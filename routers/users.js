@@ -1,21 +1,29 @@
 const express = require('express');
-const router = express.Router();
-const pages = require("../data/pages");
+const users_route = express.Router();
+const data = require("../data/data");
+const {performance} = require('perf_hooks');
 
-// method: GET, path: /pages
-router.get('/', (req, res) => {
-    res.json(pages);
-});
-
-// method: GET, path: /pages, page index: /7
-router.get('/:id', (req, res) => {
-    let page_num_index = pages.map(i => i.page_id).indexOf(parseInt(req.params.id));
-    console.log(typeof page_num_index);
-    if (page_num_index >= pages.length || page_num_index < 0) {
-        res.status(404).send('[]');
+// method: GET, path: /users, id: /7
+users_route.get('/:id', (req, res) => {
+    const beginTime = performance.now();
+    let req_id = parseInt(req.params.id);
+    let userObject = null;
+    data.find(page => {
+        return null != page.users.find(user => {
+            if (user.id === req_id) {
+                userObject = user;
+                return true;
+            }
+            return false;
+        });
+    });
+    const endTime = performance.now();
+    console.log("Execution time: %dms", endTime - beginTime);
+    if (userObject != null) {
+        res.status(200).send(userObject);
     } else {
-        res.status(200).send(pages[page_num_index]);
+        res.status(404).send('{}');
     }
 });
 
-module.exports = router;
+module.exports = users_route;

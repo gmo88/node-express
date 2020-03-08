@@ -1,4 +1,4 @@
-let pages = [
+let data = [
     {
         "page_id": 0,
         "users": [
@@ -48,4 +48,4 @@ let pages = [
     },
 ];
 
-module.exports = pages;
+module.exports = data;
