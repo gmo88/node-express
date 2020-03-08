@@ -3,6 +3,21 @@ const users_route = express.Router();
 const data = require("../data/data");
 const {performance} = require('perf_hooks');
 
+// method: GET, path: /users
+users_route.get('/', (req, res) => {
+    const beginTime = performance.now();
+    let userObject = [];
+    for (let i = 0; i < data.length; i++) {
+        userObject.push(data[i].users);
+    }
+    console.log("Execution time: %dms", performance.now() - beginTime);
+    if (userObject.length === 0) {
+        res.status(404).send(userObject)
+    } else {
+        res.status(200).send(userObject);
+    }
+});
+
 // method: GET, path: /users, id: /7
 users_route.get('/:id', (req, res) => {
     const beginTime = performance.now();
