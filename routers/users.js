@@ -6,15 +6,17 @@ const {performance} = require('perf_hooks');
 // method: GET, path: /users
 users_route.get('/', (req, res) => {
     const beginTime = performance.now();
-    let userObject = [];
+    let userArray = [];
     for (let i = 0; i < data.length; i++) {
-        userObject.push(data[i].users);
+        for (let j = 0; j < data[i].users.length; j++) {
+            userArray.push(data[i].users[j]);
+        }
     }
     console.log("Execution time: %dms", performance.now() - beginTime);
-    if (userObject.length === 0) {
-        res.status(404).send(userObject)
+    if (userArray.length === 0) {
+        res.status(404).send(userArray)
     } else {
-        res.status(200).send(userObject);
+        res.status(200).send(userArray);
     }
 });
 
