@@ -1,24 +1,27 @@
 const express = require('express');
 const users_route = express.Router();
 const data = require("../data/data");
+const { performance } = require('perf_hooks');
 
 // method: GET, path: /users, id: /7
 users_route.get('/:id', (req, res) => {
+    const beginTime = performance.now();
     let req_id = parseInt(req.params.id);
-    console.log(req_id);
-    // let userObject = data.reduce((acc, el) => [...acc, ...el.users].filter(e => e.id === req_id), []);
-    let userObject;
-    for (let i = 0; i < data.length; i++) {
-        console.log("data[i].users", data[i].users);
+    let userObject = null;
+    for (let i = 0; i < data.length && userObject == null; i++) {
         for (let j = 0; j < data[i].users.length; j++) {
-            userObject = data[i].users[j];
-            console.log("userObject.id:", userObject.id);
+            if (data[i].users[j].id === req_id) {
+                userObject = data[i].users[j];
+                break;
+            }
         }
     }
-    if (userObject.id === req_id) {
-        res.status(404).send('{}');
-    } else {
+    const endTime = performance.now();
+    console.log("Execution time: %dms", endTime - beginTime);
+    if (userObject != null) {
         res.status(200).send(userObject);
+    } else {
+        res.status(404).send('{}');
     }
 });
 
