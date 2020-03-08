@@ -1,6 +1,7 @@
 const express = require('express');
 const pages_route = express.Router();
 const data = require("../data/data");
+const {performance} = require('perf_hooks');
 
 // method: GET, path: /pages
 pages_route.get('/', (req, res) => {
@@ -9,11 +10,14 @@ pages_route.get('/', (req, res) => {
 
 // method: GET, path: /pages, page index: /7
 pages_route.get('/:id', (req, res) => {
-    let page_num_index = data.map(i => i.page_id).indexOf(parseInt(req.params.id));
-    if (page_num_index >= data.length || page_num_index < 0) {
-        res.status(404).send('[]');
+    const beginTime = performance.now();
+    let req_id = parseInt(req.params.id);
+    let pageObject = data.find(page => page.page_id === req_id ? page : null);
+    console.log("Execution time: %dms", performance.now() - beginTime);
+    if (pageObject != null) {
+        res.status(200).send(pageObject);
     } else {
-        res.status(200).send(data[page_num_index]);
+        res.status(404).send('[]');
     }
 });
 
