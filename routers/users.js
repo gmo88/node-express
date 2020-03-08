@@ -8,9 +8,15 @@ users_route.get('/:id', (req, res) => {
     const beginTime = performance.now();
     let req_id = parseInt(req.params.id);
     let userObject = null;
-    for (let i = 0; i < data.length && userObject == null; i++) {
-        userObject = data[i].users.find(el => el.id === req_id);
-    }
+    data.find(page => {
+        return page.users.find(user => {
+            if (user.id === req_id) {
+                userObject = user;
+                return true;
+            }
+            return false;
+        });
+    });
     const endTime = performance.now();
     console.log("Execution time: %dms", endTime - beginTime);
     if (userObject != null) {
