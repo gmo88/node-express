@@ -9,7 +9,7 @@ users_route.get('/:id', (req, res) => {
     let req_id = parseInt(req.params.id);
     let userObject = null;
     data.find(page => {
-        return page.users.find(user => {
+        return null != page.users.find(user => {
             if (user.id === req_id) {
                 userObject = user;
                 return true;
