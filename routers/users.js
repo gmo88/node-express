@@ -6,13 +6,26 @@ const {performance} = require('perf_hooks');
 // method: GET, path: /users
 users_route.get('/', (req, res) => {
     const beginTime = performance.now();
-    let userArray = [];
-    data.forEach(page => page.users.forEach(user => userArray.push(user)));
-    console.log("Execution time: %dms", performance.now() - beginTime);
-    if (userArray.length === 0) {
-        res.status(404).send(userArray)
+    let searchName = req.query.name;
+    if (searchName == null) {
+        let userArray = [];
+        data.forEach(page => page.users.forEach(user => userArray.push(user)));
+        console.log("Execution time: %dms", performance.now() - beginTime);
+        res.status(userArray.length === 0 ? 404 : 200).send(userArray);
     } else {
-        res.status(200).send(userArray);
+        let resultArray = [];
+        const regExp = /^[a-zA-Z\s]+/gmi;
+        if (searchName.match(regExp)) {
+            data.forEach(page => page.users.forEach(user => {
+                if (user.name === searchName) {
+                    resultArray.push(user)
+                }
+            }));
+            console.log("Execution time: %dms", performance.now() - beginTime);
+            res.status(resultArray ? 200 : 404).send(resultArray);
+        } else {
+            res.status(500).send('non-alphanumeric characters');
+        }
     }
 });
 
@@ -32,11 +45,7 @@ users_route.get('/:id', (req, res) => {
     });
     const endTime = performance.now();
     console.log("Execution time: %dms", endTime - beginTime);
-    if (userObject != null) {
-        res.status(200).send(userObject);
-    } else {
-        res.status(404).send('{}');
-    }
+    res.status(userObject != null ? 200 : 404).send(userObject);
 });
 
 module.exports = users_route;
