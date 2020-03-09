@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fetch</title>
+</head>
+<body>
+<h3>Front-end: make fetch() to perform GET /users:</h3>
+<div class="demo"></div>
+<script>
+    let demo = document.querySelector(".demo");
+    const fetchData = fetch('http://localhost:8080/users')
+      .then(resp => resp.json())
+      .then(jsonBody => jsonBody)
+      .then(result => result)
+      .catch(error => demo.innerHTML = JSON.stringify(error));
+    window.onload = async () => {
+        let loadData = await fetchData;
+        demo.innerHTML = JSON.stringify(loadData);
+    }
+</script>
+</body>
+</html>
