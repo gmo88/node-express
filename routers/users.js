@@ -14,15 +14,18 @@ users_route.get('/', (req, res) => {
         res.status(userArray.length === 0 ? 404 : 200).send(userArray);
     } else {
         let resultArray = [];
-        for (let i = 0; i < data.length; i++) {
-            for (let j = 0; j < data[i].users.length; j++) {
-                if (data[i].users[j].name === searchName) {
-                    resultArray.push(data[i].users[j]);
+        const regExp = /^[a-zA-Z\s]+/gmi;
+        if (searchName.match(regExp)) {
+            data.forEach(page => page.users.forEach(user => {
+                if (user.name === searchName) {
+                    resultArray.push(user)
                 }
-            }
+            }));
+            console.log("Execution time: %dms", performance.now() - beginTime);
+            res.status(resultArray ? 200 : 404).send(resultArray);
+        } else {
+            res.status(500).send('non-alphanumeric characters');
         }
-        console.log("Execution time: %dms", performance.now() - beginTime);
-        res.status(resultArray !== null ? 200 : 404).send(resultArray);
     }
 });
 
