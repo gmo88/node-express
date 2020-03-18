@@ -9,7 +9,7 @@
 <div class="demo"></div>
 <script>
     let demo = document.querySelector(".demo");
-    const fetchData = fetch('http://localhost:8080/users')
+    const fetchData = fetch('/users')
       .then(resp => resp.json())
       .then(jsonBody => jsonBody)
       .then(result => result)
