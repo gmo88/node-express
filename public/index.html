@@ -27,9 +27,8 @@
           .catch(error => users.innerHTML = JSON.stringify(error));
     }
 
-    function openPage(page_num) {
+    function openPage(page_num, pageUsers) {
         page_num = document.querySelector(".inputField").value;
-        let pageUsers = null;
         fetch(`/pages/${page_num}`)
           .then(resp => resp.json())
           .then(jsonBody => jsonBody)
