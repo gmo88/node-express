@@ -13,6 +13,7 @@
 <label>Input number:<input type="number" class="inputField" min="0" max="20"></label><br>
 <button onclick="openPage()">GET /pages/{page_num}</button>
 <div class="page"></div>
+<div class="container"></div>
 
 <script>
     let users = document.querySelector(".users");
@@ -28,30 +29,49 @@
 
     function openPage(page_num) {
         page_num = document.querySelector(".inputField").value;
-        // console.log("input", page_num);
         fetch(`/pages/${page_num}`)
           .then(resp => resp.json())
           .then(jsonBody => jsonBody)
-          .then(result => {
-              let renderHtml = `
-<table>
-<tr>Page id: ${result.page_id}</tr>
-  <tr>
-    <th>id</th> <th>Name</th> <th>Surname</th>
-  </tr>
-`;
-              for (let i = 0; i < result.users.length; i++) {
-                  renderHtml += `
-  <tr>
-    <td>${result.users[i].id}</td> <td>${result.users[i].name}</td> <td>${result.users[i].surname}</td>
-  </tr>`;
-              }
-              renderHtml += `</table>`;
-              page.innerHTML = renderHtml;
-          })
+          .then(result => generateDynamicTable(result))
           .catch(error => page.innerHTML = JSON.stringify(error));
     }
 
+    function generateDynamicTable(result) {
+        let table = document.createElement('table');
+        let tHead = document.createElement("thead");
+        let hRow = document.createElement("tr");
+        let tBody = document.createElement("tbody");
+        let container = document.querySelector('.container');
+        let tableHeader = [];
+
+        for (let i = 0; i < result.users.length; i++) {
+            for (let key in result.users[i]) {
+                if (tableHeader.indexOf(key) === -1) {
+                    tableHeader.push(key);
+                }
+            }
+        }
+
+        for (let i = 0; i < tableHeader.length; i++) {
+            let th = document.createElement("th");
+            th.innerHTML = tableHeader[i];
+            hRow.appendChild(th);
+        }
+        tHead.appendChild(hRow);
+        table.appendChild(tHead);
+
+        for (let i = 0; i < result.users.length; i++) {
+            let tableRow = document.createElement("tr");
+            for (let j = 0; j < tableHeader.length; j++) {
+                let td = document.createElement("td");
+                td.innerHTML = result.users[i][tableHeader[j]];
+                tableRow.appendChild(td);
+            }
+            tBody.appendChild(tableRow);
+        }
+        table.appendChild(tBody);
+        container.appendChild(table);
+    }
 </script>
 </body>
 </html>
