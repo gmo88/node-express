@@ -29,10 +29,14 @@
 
     function openPage(page_num) {
         page_num = document.querySelector(".inputField").value;
+        let pageUsers = null;
         fetch(`/pages/${page_num}`)
           .then(resp => resp.json())
           .then(jsonBody => jsonBody)
-          .then(result => generateDynamicTable(result))
+          .then(result => {
+              pageUsers = result;
+              generateDynamicTable(pageUsers);
+          })
           .catch(error => page.innerHTML = JSON.stringify(error));
     }
 
