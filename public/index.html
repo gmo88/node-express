@@ -5,18 +5,72 @@
     <title>Fetch</title>
 </head>
 <body>
-<h3>Front-end: make fetch() to perform GET /users:</h3>
-<div class="demo"></div>
+<h3>Front-end: make fetch() to perform <i>GET /users:</i></h3>
+<button onclick="fetchUsers()">GET /users</button>
+<div class="users"></div>
+
+<h3>Front-end: make fetch() to perform <i>GET /pages/{page_num}:</i></h3>
+<label>Input number:<input type="number" class="inputField" min="0" max="20"></label><br>
+<button onclick="openPage()">GET /pages/{page_num}</button>
+<div class="page"></div>
+<div class="container"></div>
+
 <script>
-    let demo = document.querySelector(".demo");
-    const fetchData = fetch('/users')
-      .then(resp => resp.json())
-      .then(jsonBody => jsonBody)
-      .then(result => result)
-      .catch(error => demo.innerHTML = JSON.stringify(error));
-    window.onload = async () => {
-        let loadData = await fetchData;
-        demo.innerHTML = JSON.stringify(loadData);
+    let users = document.querySelector(".users");
+    let page = document.querySelector(".page");
+
+    function fetchUsers() {
+        fetch('/users')
+          .then(resp => resp.json())
+          .then(jsonBody => jsonBody)
+          .then(result => users.innerHTML = JSON.stringify(result))
+          .catch(error => users.innerHTML = JSON.stringify(error));
+    }
+
+    function openPage(page_num) {
+        page_num = document.querySelector(".inputField").value;
+        fetch(`/pages/${page_num}`)
+          .then(resp => resp.json())
+          .then(jsonBody => jsonBody)
+          .then(result => generateDynamicTable(result))
+          .catch(error => page.innerHTML = JSON.stringify(error));
+    }
+
+    function generateDynamicTable(result) {
+        let table = document.createElement('table');
+        let tHead = document.createElement("thead");
+        let hRow = document.createElement("tr");
+        let tBody = document.createElement("tbody");
+        let container = document.querySelector('.container');
+        let tableHeader = [];
+
+        for (let i = 0; i < result.users.length; i++) {
+            for (let key in result.users[i]) {
+                if (tableHeader.indexOf(key) === -1) {
+                    tableHeader.push(key);
+                }
+            }
+        }
+
+        for (let i = 0; i < tableHeader.length; i++) {
+            let th = document.createElement("th");
+            th.innerHTML = tableHeader[i];
+            hRow.appendChild(th);
+        }
+        tHead.appendChild(hRow);
+        table.appendChild(tHead);
+
+        for (let i = 0; i < result.users.length; i++) {
+            let tableRow = document.createElement("tr");
+            for (let j = 0; j < tableHeader.length; j++) {
+                let td = document.createElement("td");
+                td.innerHTML = result.users[i][tableHeader[j]];
+                tableRow.appendChild(td);
+            }
+            tBody.appendChild(tableRow);
+        }
+        table.appendChild(tBody);
+        container.appendChild(table);
     }
 </script>
 </body>
