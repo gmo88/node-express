@@ -20,6 +20,8 @@
     let page = document.querySelector(".page");
     let button = document.querySelector(".button");
 
+    button.addEventListener('click', () => openPage(document.querySelector(".inputField").value));
+
     function fetchUsers() {
         fetch('/users')
           .then(resp => resp.json())
@@ -28,14 +30,13 @@
           .catch(error => users.innerHTML = JSON.stringify(error));
     }
 
-    button.addEventListener('click', function openPage(page_num) {
-        page_num = document.querySelector(".inputField").value;
+    function openPage(page_num) {
         fetch(`/pages/${page_num}`)
           .then(resp => resp.json())
           .then(jsonBody => jsonBody)
           .then(result => generateDynamicTable(result))
           .catch(error => page.innerHTML = JSON.stringify(error));
-    });
+    }
 
     function generateDynamicTable(result) {
         let table = document.createElement('table');
