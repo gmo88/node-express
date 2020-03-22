@@ -19,7 +19,7 @@
     let users = document.querySelector(".users");
     let page = document.querySelector(".page");
     let button = document.querySelector(".button");
-    let fetchResult = null;
+    let currentPage = null;
     button.addEventListener('click', () => openPage(document.querySelector(".inputField").value));
 
     function fetchUsers() {
@@ -35,8 +35,8 @@
           .then(resp => resp.json())
           .then(jsonBody => jsonBody)
           .then(result => {
-              fetchResult = result;
-              generateDynamicTable(fetchResult);
+              currentPage = result;
+              generateDynamicTable(currentPage);
           })
           .catch(error => page.innerHTML = JSON.stringify(error));
     }
