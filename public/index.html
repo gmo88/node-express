@@ -11,13 +11,16 @@
 
 <h3>Front-end: make fetch() to perform <i>GET /pages/{page_num}:</i></h3>
 <label>Input number:<input type="number" class="inputField" min="0" max="20"></label><br>
-<button onclick="openPage()">GET /pages/{page_num}</button>
+<button class="button">GET /pages/{page_num}</button>
 <div class="page"></div>
 <div class="container"></div>
 
 <script>
     let users = document.querySelector(".users");
     let page = document.querySelector(".page");
+    let button = document.querySelector(".button");
+    let currentPage = null;
+    button.addEventListener('click', () => openPage(document.querySelector(".inputField").value));
 
     function fetchUsers() {
         fetch('/users')
@@ -28,11 +31,13 @@
     }
 
     function openPage(page_num) {
-        page_num = document.querySelector(".inputField").value;
         fetch(`/pages/${page_num}`)
           .then(resp => resp.json())
           .then(jsonBody => jsonBody)
-          .then(result => generateDynamicTable(result))
+          .then(result => {
+              currentPage = result;
+              generateDynamicTable(currentPage);
+          })
           .catch(error => page.innerHTML = JSON.stringify(error));
     }
 
