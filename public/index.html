@@ -7,38 +7,59 @@
 <body>
 <h3>Front-end: make fetch() to perform <i>GET /users:</i></h3>
 <button onclick="fetchUsers()">GET /users</button>
-<div class="users"></div>
+<div class="usersShow"></div>
 
 <h3>Front-end: make fetch() to perform <i>GET /pages/{page_num}:</i></h3>
 <label>Input number:<input type="number" class="inputField" min="0" max="20"></label><br>
 <button class="button">GET /pages/{page_num}</button>
-<div class="page"></div>
 <div class="container"></div>
 
+<h3>Find user</h3>
+<label>Selected user:<input class="userNameInput" type="text"></label><br>
+<button class="findUserBtn" onclick="getInputValue()">find</button>
+
 <script>
-    let users = document.querySelector(".users");
-    let page = document.querySelector(".page");
+    const getParams = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            "Access-Control-Allow-Origin": "*",
+        }
+    };
+
+    let users = document.querySelector(".usersShow");
     let button = document.querySelector(".button");
     let currentPage = null;
+    let data = null;
+
     button.addEventListener('click', () => openPage(document.querySelector(".inputField").value));
 
     function fetchUsers() {
-        fetch('/users')
+        fetch('/users', getParams)
           .then(resp => resp.json())
-          .then(jsonBody => jsonBody)
+          .then(jsonBody => {
+              data = jsonBody;
+              return jsonBody;
+          })
           .then(result => users.innerHTML = JSON.stringify(result))
           .catch(error => users.innerHTML = JSON.stringify(error));
     }
 
     function openPage(page_num) {
-        fetch(`/pages/${page_num}`)
+        fetch(`/pages/${page_num}`, getParams)
           .then(resp => resp.json())
           .then(jsonBody => jsonBody)
           .then(result => {
               currentPage = result;
               generateDynamicTable(currentPage);
           })
-          .catch(error => page.innerHTML = JSON.stringify(error));
+          .catch(error => document.querySelector(".container").innerHTML = JSON.stringify(error));
+    }
+
+    function getInputValue() {
+        let inputVal = document.querySelector('.userNameInput').value;
+        const result = currentPage.users.filter(i => i.name.toLowerCase() === inputVal.toLowerCase());
+        return result
     }
 
     function generateDynamicTable(result) {
