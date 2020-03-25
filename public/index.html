@@ -34,34 +34,54 @@
 
     button.addEventListener('click', () => openPage(document.querySelector(".inputField").value));
 
-    function fetchUsers() {
+    const fetchUsers = () => {
         fetch('/users', getParams)
           .then(resp => resp.json())
-          .then(jsonBody => {
-              data = jsonBody;
-              return jsonBody;
-          })
+          .then(jsonBody => data = jsonBody)
           .then(result => users.innerHTML = JSON.stringify(result))
           .catch(error => users.innerHTML = JSON.stringify(error));
-    }
+    };
 
-    function openPage(page_num) {
+    const createButton = (type, value, where) => {
+        let element = document.createElement("input");
+        let whereToAppend = document.querySelector(where);
+        element.setAttribute("type", type);
+        element.setAttribute("value", value);
+        whereToAppend.appendChild(element);
+        return whereToAppend;
+    };
+    const addEvent = (btn, fn) => {
+        btn.addEventListener('click', () => fn)
+    };
+    createButton('button', "GET /pages/{page_num", 'body');
+    
+    const openPage = (page_num) => {
         fetch(`/pages/${page_num}`, getParams)
           .then(resp => resp.json())
           .then(jsonBody => jsonBody)
           .then(result => {
               currentPage = result;
+              console.log('current page:', currentPage);
               generateDynamicTable(currentPage);
           })
           .catch(error => document.querySelector(".container").innerHTML = JSON.stringify(error));
-    }
+    };
 
-    function getInputValue() {
+    const getInputValue = () => {
         let inputVal = document.querySelector('.userNameInput').value;
         const result = currentPage.users.filter(i => i.name.toLowerCase() === inputVal.toLowerCase());
         return result
-    }
+    };
 
+    const createList = (singleUserData) => {
+        let ul 
+        let li = document.createElement("li");
+        let whereToAppend = document.querySelector("body");
+        whereToAppend.appendChild(li);
+        return whereToAppend;
+    };
+    
+    createList("max");
     function generateDynamicTable(result) {
         let table = document.createElement('table');
         let tHead = document.createElement("thead");
