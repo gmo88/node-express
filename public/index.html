@@ -5,11 +5,6 @@
     <title>Fetch</title>
 </head>
 <body>
-<h3>Front-end: make fetch() to perform <i>GET /users:</i></h3>
-<button onclick="fetchUsers()">GET /users</button>
-<div class="usersShow"></div>
-
-<h3>Front-end: make fetch() to perform <i>GET /pages/{page_num}:</i></h3>
 <label>Input number:<input type="number" class="inputField" min="0" max="20"></label><br>
 <button class="button">GET /pages/{page_num}</button>
 <div class="container"></div>
@@ -27,25 +22,37 @@
         }
     };
 
-    let users = document.querySelector(".usersShow");
     let button = document.querySelector(".button");
     let currentPage = null;
     let data = null;
 
     button.addEventListener('click', () => openPage(document.querySelector(".inputField").value));
 
-    function fetchUsers() {
+    const fetchUsers = () => {
         fetch('/users', getParams)
           .then(resp => resp.json())
           .then(jsonBody => {
               data = jsonBody;
-              return jsonBody;
+              renderUserList(data, 'body');
           })
-          .then(result => users.innerHTML = JSON.stringify(result))
-          .catch(error => users.innerHTML = JSON.stringify(error));
-    }
+          .catch(error => renderUserList(error, 'body'));
+    };
 
-    function openPage(page_num) {
+    const createButton = (type, value, where) => {
+        let element = document.createElement("input");
+        let whereToAppend = document.querySelector(where);
+        element.setAttribute("type", type);
+        element.setAttribute("value", value);
+        element.onclick = function () {
+            return fetchUsers();
+        };
+        whereToAppend.appendChild(element);
+        return whereToAppend;
+    };
+
+    createButton('button', "get page number", 'body');
+
+    const openPage = (page_num) => {
         fetch(`/pages/${page_num}`, getParams)
           .then(resp => resp.json())
           .then(jsonBody => jsonBody)
@@ -54,13 +61,28 @@
               generateDynamicTable(currentPage);
           })
           .catch(error => document.querySelector(".container").innerHTML = JSON.stringify(error));
-    }
+    };
 
-    function getInputValue() {
+    const getInputValue = () => {
         let inputVal = document.querySelector('.userNameInput').value;
         const result = currentPage.users.filter(i => i.name.toLowerCase() === inputVal.toLowerCase());
-        return result
-    }
+        return renderUserList(result, "body");
+    };
+
+    const renderUserList = (data, where) => {
+        let ul = document.createElement("ul");
+        for (let i = 0; i < data.length; i++) {
+            let li = document.createElement("li");
+            let id = document.createTextNode(`id: ${data[i].id}, `);
+            let name = document.createTextNode(`name: ${data[i].name}, `);
+            let surname = document.createTextNode(`surname: ${data[i].surname} `);
+            li.appendChild(id);
+            li.appendChild(name);
+            li.appendChild(surname);
+            ul.appendChild(li);
+        }
+        document.querySelector(where).appendChild(ul);
+    };
 
     function generateDynamicTable(result) {
         let table = document.createElement('table');
