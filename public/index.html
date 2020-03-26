@@ -5,7 +5,9 @@
     <title>Fetch</title>
 </head>
 <body>
+<h3>Front-end: make fetch() to perform <i>GET /users:</i></h3>
 <button onclick="fetchUsers()">GET /users</button>
+<div class="usersShow"></div>
 
 <h3>Front-end: make fetch() to perform <i>GET /pages/{page_num}:</i></h3>
 <label>Input number:<input type="number" class="inputField" min="0" max="20"></label><br>
@@ -32,62 +34,33 @@
 
     button.addEventListener('click', () => openPage(document.querySelector(".inputField").value));
 
-    const fetchUsers = () => {
+    function fetchUsers() {
         fetch('/users', getParams)
           .then(resp => resp.json())
           .then(jsonBody => {
               data = jsonBody;
-              renderUserList(data, 'body');
+              return jsonBody;
           })
-          .catch(error => renderUserList(error, 'body'));
-    };
+          .then(result => users.innerHTML = JSON.stringify(result))
+          .catch(error => users.innerHTML = JSON.stringify(error));
+    }
 
-    const createButton = (type, value, where) => {
-        let element = document.createElement("input");
-        let whereToAppend = document.querySelector(where);
-        element.setAttribute("type", type);
-        element.setAttribute("value", value);
-        element.onclick = function () {
-            return fetchUsers();
-        };
-        whereToAppend.appendChild(element);
-        return whereToAppend;
-    };
-
-    createButton('button', "get page number", 'body');
-
-    const openPage = (page_num) => {
+    function openPage(page_num) {
         fetch(`/pages/${page_num}`, getParams)
           .then(resp => resp.json())
           .then(jsonBody => jsonBody)
           .then(result => {
               currentPage = result;
-              console.log('current page:', currentPage);
               generateDynamicTable(currentPage);
           })
           .catch(error => document.querySelector(".container").innerHTML = JSON.stringify(error));
-    };
+    }
 
-    const getInputValue = () => {
+    function getInputValue() {
         let inputVal = document.querySelector('.userNameInput').value;
         const result = currentPage.users.filter(i => i.name.toLowerCase() === inputVal.toLowerCase());
-        return renderUserList(result, "body");
-    };
-
-    const renderUserList = (data, where) => {
-        let ul = document.createElement("ul");
-        for (let i = 0; i < data.length; i++) {
-            let li = document.createElement("li");
-            let id = document.createTextNode(`id: ${data[i].id}, `);
-            let name = document.createTextNode(`name: ${data[i].name}, `);
-            let surname = document.createTextNode(`surname: ${data[i].surname} `);
-            li.appendChild(id);
-            li.appendChild(name);
-            li.appendChild(surname);
-            ul.appendChild(li);
-        }
-        document.querySelector(where).appendChild(ul);
-    };
+        return result
+    }
 
     function generateDynamicTable(result) {
         let table = document.createElement('table');
