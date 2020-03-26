@@ -6,54 +6,29 @@
 </head>
 <body>
 <label>Input number:<input type="number" class="inputField" min="0" max="20"></label><br>
-<button class="button">GET /pages/{page_num}</button>
 <div class="container"></div>
 
-<h3>Find user</h3>
 <label>Selected user:<input class="userNameInput" type="text"></label><br>
-<button class="findUserBtn" onclick="getInputValue()">find</button>
 
 <script>
-    const getParams = {
+    const requestGetMethodParams = {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             "Access-Control-Allow-Origin": "*",
         }
     };
-
-    let button = document.querySelector(".button");
     let currentPage = null;
-    let data = null;
-
-    button.addEventListener('click', () => openPage(document.querySelector(".inputField").value));
 
     const fetchUsers = () => {
-        fetch('/users', getParams)
+        fetch('/users', requestGetMethodParams)
           .then(resp => resp.json())
-          .then(jsonBody => {
-              data = jsonBody;
-              renderUserList(data, 'body');
-          })
+          .then(jsonBody => renderUserList(jsonBody, 'body'))
           .catch(error => renderUserList(error, 'body'));
     };
 
-    const createButton = (type, value, where) => {
-        let element = document.createElement("input");
-        let whereToAppend = document.querySelector(where);
-        element.setAttribute("type", type);
-        element.setAttribute("value", value);
-        element.onclick = function () {
-            return fetchUsers();
-        };
-        whereToAppend.appendChild(element);
-        return whereToAppend;
-    };
-
-    createButton('button', "get page number", 'body');
-
     const openPage = (page_num) => {
-        fetch(`/pages/${page_num}`, getParams)
+        fetch(`/pages/${page_num}`, requestGetMethodParams)
           .then(resp => resp.json())
           .then(jsonBody => jsonBody)
           .then(result => {
@@ -62,6 +37,7 @@
           })
           .catch(error => document.querySelector(".container").innerHTML = JSON.stringify(error));
     };
+
 
     const getInputValue = () => {
         let inputVal = document.querySelector('.userNameInput').value;
@@ -84,7 +60,21 @@
         document.querySelector(where).appendChild(ul);
     };
 
-    function generateDynamicTable(result) {
+    const createButton = (type, value, where, fn) => {
+        let element = document.createElement("input");
+        let whereToAppend = document.querySelector(where);
+        element.setAttribute("type", type);
+        element.setAttribute("value", value);
+        element.addEventListener('click', fn);
+        whereToAppend.appendChild(element);
+        return whereToAppend;
+    };
+
+    createButton('button', "Get all users", 'body', fetchUsers);
+    createButton('button', "find user", 'body', getInputValue);
+    createButton('button', "Get page number", 'body', () => openPage(document.querySelector(".inputField").value));
+
+    const generateDynamicTable = (result) => {
         let table = document.createElement('table');
         let tHead = document.createElement("thead");
         let hRow = document.createElement("tr");
