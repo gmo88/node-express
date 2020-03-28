@@ -6,9 +6,8 @@
 </head>
 <body>
 <label>Input number:<input type="number" class="inputField" min="0" max="20"></label><br>
-<div class="container"></div>
-
 <label>Selected user:<input class="userNameInput" type="text"></label><br>
+<div class="container"></div>
 
 <script>
     const requestGetMethodParams = {
@@ -23,8 +22,8 @@
     const fetchUsers = () => {
         fetch('/users', requestGetMethodParams)
           .then(resp => resp.json())
-          .then(jsonBody => renderUserList(jsonBody, 'body'))
-          .catch(error => renderUserList(error, 'body'));
+          .then(jsonBody => renderUserList(jsonBody, '.container'))
+          .catch(error => renderUserList(error, '.container'));
     };
 
     const openPage = (page_num) => {
@@ -38,14 +37,20 @@
           .catch(error => document.querySelector(".container").innerHTML = JSON.stringify(error));
     };
 
-
     const getInputValue = () => {
         let inputVal = document.querySelector('.userNameInput').value;
         const result = currentPage.users.filter(i => i.name.toLowerCase() === inputVal.toLowerCase());
-        return renderUserList(result, "body");
+        return renderUserList(result, ".container");
     };
 
     const renderUserList = (data, where) => {
+        let div = null;
+        if (document.contains(document.querySelector(where))) {
+            document.querySelector(where).remove();
+        }
+        div = document.createElement("div");
+        div.className = "container";
+        document.querySelector("body").appendChild(div);
         let ul = document.createElement("ul");
         for (let i = 0; i < data.length; i++) {
             let li = document.createElement("li");
@@ -57,7 +62,7 @@
             li.appendChild(surname);
             ul.appendChild(li);
         }
-        document.querySelector(where).appendChild(ul);
+        div.appendChild(ul);
     };
 
     const createButton = (type, value, where, fn) => {
