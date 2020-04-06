@@ -1,130 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Fetch</title>
+  <meta charset="UTF-8">
+  <title>Fetch</title>
 </head>
 <body>
 <label class="userNumb">Input number:<input type="number" class="inputField" min="0" max="20"></label><br>
 <label class="userSelect">Selected user:<input class="userNameInput" type="text"></label><br>
 <div class="container"></div>
 
-<script>
-    const requestGetMethodParams = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            "Access-Control-Allow-Origin": "*",
-        }
-    };
-    let currentPage = null;
+<script defer>
+  const requestGetMethodParams = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      "Access-Control-Allow-Origin": "*",
+    }
+  };
+  let currentPage = null;
 
-    const fetchUsers = () => {
-        fetch('/users', requestGetMethodParams)
-          .then(resp => resp.json())
-          .then(jsonBody => renderUserList(jsonBody, 'container'))
-          .catch(error => renderUserList(error, 'container'));
-    };
+  const fetchUsers = () => {
+    fetch('/users', requestGetMethodParams)
+      .then(resp => resp.json())
+      .then(jsonBody => renderUserList(jsonBody, 'container'))
+      .catch(error => renderUserList(error, 'container'));
+  };
 
-    const openPage = (page_num, where) => {
-        const whereSelector = `.${where}`;
-        fetch(`/pages/${page_num}`, requestGetMethodParams)
-          .then(resp => resp.json())
-          .then(jsonBody => jsonBody)
-          .then(result => {
-              currentPage = result;
-              const table = generateDynamicTable(currentPage);
-              let div = null;
-              if (document.contains(document.querySelector(whereSelector))) {
-                  document.querySelector(whereSelector).remove();
-              }
-              div = document.createElement("div");
-              div.className = where;
-              div.appendChild(table);
-              document.querySelector("body").appendChild(div);
-          })
-          .catch(error => document.querySelector(whereSelector).innerHTML = JSON.stringify(error));
-    };
-
-    const getInputValue = () => {
-        let inputVal = document.querySelector('.userNameInput').value;
-        const result = currentPage.users.filter(i => i.name.toLowerCase() === inputVal.toLowerCase());
-        return renderUserList(result, "container");
-    };
-
-    const renderUserList = (data, where) => {
+  const openPage = (page_num, where) => {
+    const whereSelector = `.${where}`;
+    if (page_num == null) {
+      document.querySelector(whereSelector).innerHTML = "No data";
+      return;
+    }
+    fetch(`/pages/${page_num}`, requestGetMethodParams)
+      .then(resp => resp.json())
+      .then(jsonBody => jsonBody)
+      .then(result => {
+        currentPage = result;
+        const table = generateDynamicTable(currentPage);
         let div = null;
-        const whereSelector = `.${where}`;
         if (document.contains(document.querySelector(whereSelector))) {
-            document.querySelector(whereSelector).remove();
+          document.querySelector(whereSelector).remove();
         }
         div = document.createElement("div");
         div.className = where;
+        div.appendChild(table);
         document.querySelector("body").appendChild(div);
-        let ul = document.createElement("ul");
-        for (let i = 0; i < data.length; i++) {
-            let li = document.createElement("li");
-            let id = document.createTextNode(`id: ${data[i].id}, `);
-            let name = document.createTextNode(`name: ${data[i].name}, `);
-            let surname = document.createTextNode(`surname: ${data[i].surname} `);
-            li.appendChild(id);
-            li.appendChild(name);
-            li.appendChild(surname);
-            ul.appendChild(li);
+      })
+      .catch(error => {
+        if (where != null) {
+          document.querySelector(whereSelector).innerHTML = JSON.stringify(error)
         }
-        div.appendChild(ul);
-    };
+      });
+  };
 
-    const createButton = (type, value, where, fn) => {
-        let element = document.createElement("input");
-        let whereToAppend = document.querySelector(where);
-        element.setAttribute("type", type);
-        element.setAttribute("value", value);
-        element.addEventListener('click', fn);
-        whereToAppend.appendChild(element);
-        return whereToAppend;
-    };
+  const getInputValue = () => {
+    let inputVal = document.querySelector('.userNameInput').value;
+    const result = currentPage.users.filter(i => i.name.toLowerCase() === inputVal.toLowerCase());
+    return renderUserList(result, "container");
+  };
 
-    createButton('button', "Get all users", 'body', fetchUsers);
-    createButton('button', "find user", '.userSelect', getInputValue);
-    createButton('button', "Get page number", '.userNumb', () => openPage(document.querySelector(".inputField").value));
-
-    // return table object that must insert into container
-    const generateDynamicTable = (result) => {
-        let table = document.createElement('table');
-        let tHead = document.createElement("thead");
-        let hRow = document.createElement("tr");
-        let tBody = document.createElement("tbody");
-        let tableHeader = [];
-
-        for (let i = 0; i < result.users.length; i++) {
-            for (let key in result.users[i]) {
-                if (tableHeader.indexOf(key) === -1) {
-                    tableHeader.push(key);
-                }
-            }
-        }
-
-        for (let i = 0; i < tableHeader.length; i++) {
-            let th = document.createElement("th");
-            th.innerHTML = tableHeader[i];
-            hRow.appendChild(th);
-        }
-        tHead.appendChild(hRow);
-        table.appendChild(tHead);
-
-        for (let i = 0; i < result.users.length; i++) {
-            let tableRow = document.createElement("tr");
-            for (let j = 0; j < tableHeader.length; j++) {
-                let td = document.createElement("td");
-                td.innerHTML = result.users[i][tableHeader[j]];
-                tableRow.appendChild(td);
-            }
-            tBody.appendChild(tableRow);
-        }
-        table.appendChild(tBody);
-        return table;
+  const renderUserList = (data, where) => {
+    let div = null;
+    const whereSelector = `.${where}`;
+    if (document.contains(document.querySelector(whereSelector))) {
+      document.querySelector(whereSelector).remove();
     }
+    div = document.createElement("div");
+    div.className = where;
+    document.querySelector("body").appendChild(div);
+    let ul = document.createElement("ul");
+    for (let i = 0; i < data.length; i++) {
+      let li = document.createElement("li");
+      let id = document.createTextNode(`id: ${data[i].id}, `);
+      let name = document.createTextNode(`name: ${data[i].name}, `);
+      let surname = document.createTextNode(`surname: ${data[i].surname} `);
+      li.appendChild(id);
+      li.appendChild(name);
+      li.appendChild(surname);
+      ul.appendChild(li);
+    }
+    div.appendChild(ul);
+  };
+
+  const createButton = (type, value, where, fn) => {
+    let element = document.createElement("input");
+    let whereToAppend = document.querySelector(where);
+    element.setAttribute("type", type);
+    element.setAttribute("value", value);
+    element.addEventListener('click', fn);
+    whereToAppend.appendChild(element);
+    return whereToAppend;
+  };
+
+  createButton('button', "Get all users", 'body', fetchUsers);
+  createButton('button', "find user", '.userSelect', getInputValue);
+  createButton('button', "Get page number", '.userNumb', () => openPage(document.querySelector(".inputField").value));
+
+  // return table object that must insert into container
+  const generateDynamicTable = (result) => {
+    let table = document.createElement('table');
+    let tHead = document.createElement("thead");
+    let hRow = document.createElement("tr");
+    let tBody = document.createElement("tbody");
+    let tableHeader = [];
+
+    for (let i = 0; i < result.users.length; i++) {
+      for (let key in result.users[i]) {
+        if (tableHeader.indexOf(key) === -1) {
+          tableHeader.push(key);
+        }
+      }
+    }
+
+    for (let i = 0; i < tableHeader.length; i++) {
+      let th = document.createElement("th");
+      th.innerHTML = tableHeader[i];
+      hRow.appendChild(th);
+    }
+    tHead.appendChild(hRow);
+    table.appendChild(tHead);
+
+    for (let i = 0; i < result.users.length; i++) {
+      let tableRow = document.createElement("tr");
+      for (let j = 0; j < tableHeader.length; j++) {
+        let td = document.createElement("td");
+        td.innerHTML = result.users[i][tableHeader[j]];
+        tableRow.appendChild(td);
+      }
+      tBody.appendChild(tableRow);
+    }
+    table.appendChild(tBody);
+    return table;
+  }
 </script>
 </body>
 </html>
