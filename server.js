@@ -10,9 +10,6 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.use(express.static('public')); // relative path of client-side code
-app.get('/', (req, res) => {
-    res.sendFile('index1.html', {root: __dirname});
-});
 
 app.use('/pages', pages);
 app.use('/users', users);

@@ -5,8 +5,8 @@
     <title>Fetch</title>
 </head>
 <body>
-<label>Input number:<input type="number" class="inputField" min="0" max="20"></label><br>
-<label>Selected user:<input class="userNameInput" type="text"></label><br>
+<label class="userNumb">Input number:<input type="number" class="inputField" min="0" max="20"></label><br>
+<label class="userSelect">Selected user:<input class="userNameInput" type="text"></label><br>
 <div class="container"></div>
 
 <script>
@@ -86,8 +86,8 @@
     };
 
     createButton('button', "Get all users", 'body', fetchUsers);
-    createButton('button', "find user", 'body', getInputValue);
-    createButton('button', "Get page number", 'body', () => openPage(document.querySelector(".inputField").value));
+    createButton('button', "find user", '.userSelect', getInputValue);
+    createButton('button', "Get page number", '.userNumb', () => openPage(document.querySelector(".inputField").value));
 
     // return table object that must insert into container
     const generateDynamicTable = (result) => {
